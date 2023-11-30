@@ -131,7 +131,7 @@ export default class ThreeScene {
 
     let exportModel: any[] = [];
     this.model.children.forEach((children) => {
-      //console.log(children.name);
+      console.log(children.name);
 
       if (children.name == "Wall") {
         exportModel.push(children);
@@ -145,7 +145,7 @@ export default class ThreeScene {
           type: 1,
           tag: [],
           matrix4: mat,
-          path: children.name + ".glb",
+          path: "models/" + children.name + ".glb",
           children: [],
         };
         rootJson.backgrounds = [node];
@@ -160,7 +160,6 @@ export default class ThreeScene {
           type: 4,
           tag: [],
           matrix4: mat,
-          path: children.name + ".glb",
           children: [],
         };
 
@@ -177,7 +176,7 @@ export default class ThreeScene {
             type: 4,
             tag: [],
             matrix4: mat,
-            path: child.name + ".glb",
+            path: "models/" + child.name + ".glb",
             children: [],
           };
 
@@ -196,7 +195,7 @@ export default class ThreeScene {
           type: 4,
           tag: [],
           matrix4: mat,
-          path: children.name + ".glb",
+          path: "models/" + children.name + ".glb",
           children: [],
         };
         rootJson.machines.push(node);
@@ -212,13 +211,18 @@ export default class ThreeScene {
     console.log(exportModel);
     for (let i = 0; i < exportModel.length; i++) {
       let scene = new THREE.Scene();
+
       scene.add(exportModel[i]);
+      exportModel[i].position.copy(new THREE.Vector3());
+      exportModel[i].quaternion.copy(new THREE.Quaternion());
+      exportModel[i].scale.copy(new THREE.Vector3(1, 1, 1));
 
       exporter.parse(
         scene,
         (gltf) => {
           let name = exportModel[i].name;
-          zip.file(`${name}.glb`, JSON.stringify(gltf));
+
+          zip.file(`models/${name}.glb`, JSON.stringify(gltf));
           if (i == exportModel.length - 1) {
             zip.generateAsync({ type: "blob" }).then((content) => {
               saveAs(content, `model.zip`);
