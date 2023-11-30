@@ -222,7 +222,7 @@ export default class ThreeScene {
         (gltf) => {
           let name = exportModel[i].name;
 
-          zip.file(`models/${name}.glb`, JSON.stringify(gltf));
+          zip.file(`models/${name}.glb`, _toBlob(gltf));
           if (i == exportModel.length - 1) {
             zip.generateAsync({ type: "blob" }).then((content) => {
               saveAs(content, `model.zip`);
@@ -231,8 +231,15 @@ export default class ThreeScene {
         },
         (err) => {
           console.log(err);
-        }
+        },
+        { binary: true }
       );
     }
   }
+}
+
+function _toBlob(data: any, isArrayBuffer: boolean = true) {
+  return new Blob([data], {
+    type: isArrayBuffer ? "application/octet-stream" : "text/plain",
+  });
 }
