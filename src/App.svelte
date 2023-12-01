@@ -16,10 +16,9 @@
 
   let drop = (event)=>{
     event.preventDefault();
-    // console.log(event.dataTransfer.files)
 
     scene.loadModel(event.dataTransfer.files);
-    showLabel = false;
+
   }
 </script>
 
