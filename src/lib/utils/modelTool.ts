@@ -49,7 +49,7 @@ export default class ModelTool {
         let loader = new GLTFLoader();
 
         loader.parse(contents as ArrayBuffer, "", (result) => {
-          let scene = result.scene;
+          let scene = result.scene as THREE.Group;
           this.model = scene;
           onComplete(scene);
         });
@@ -158,25 +158,30 @@ export default class ModelTool {
       _toBlob(JSON.stringify(jsonData), false)
     );
 
-    for (let i = 0; i < exportModel.length; i++) {
+    let count = 0;
+
+    exportModel.forEach((model) => {
       let scene = new THREE.Scene();
 
-      scene.add(exportModel[i]);
-      exportModel[i].position.copy(new THREE.Vector3());
-      exportModel[i].quaternion.copy(new THREE.Quaternion());
-      exportModel[i].scale.copy(new THREE.Vector3(1, 1, 1));
+      scene.add(model);
+      model.position.copy(new THREE.Vector3());
+      model.quaternion.copy(new THREE.Quaternion());
+      model.scale.copy(new THREE.Vector3(1, 1, 1));
 
       exporter.parse(
         scene,
         (gltf) => {
-          let name = exportModel[i].name;
-
+          count++;
+          let name = model.name;
+          console.log(name);
+          // console.log(name);
           this.zipTool.appFileBlob(
             `models/${name}.glb`,
             _toBlob(_toBlob(gltf), false)
           );
 
-          if (i == exportModel.length - 1) {
+          if (count == exportModel.length) {
+            console.log("download");
             this.zipTool.download("model", () => {
               alert("Successful!");
             });
@@ -187,6 +192,6 @@ export default class ModelTool {
         },
         { binary: true }
       );
-    }
+    });
   }
 }
